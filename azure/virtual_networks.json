@@ -443,7 +443,7 @@
         },
         "storageProfile": {
           "osDisk": {
-            "createOption": "fromImage",
+            "createOption": "FromImage",
             "diskSizeGB": 30,
             "managedDisk": {
               "storageAccountType": "[parameters('paramOsDiskType')]"
@@ -483,7 +483,7 @@
         },
         "storageProfile": {
           "osDisk": {
-            "createOption": "fromImage",
+            "createOption": "FromImage",
             "diskSizeGB": "[parameters('paramOsDiskSizeGBKubeMaster')]",
             "managedDisk": {
               "storageAccountType": "[parameters('paramOsDiskType')]"
@@ -523,7 +523,7 @@
         },
         "storageProfile": {
           "osDisk": {
-            "createOption": "fromImage",
+            "createOption": "FromImage",
             "diskSizeGB": "[parameters('paramOsDiskSizeGBKubeNode')]",
             "managedDisk": {
               "storageAccountType": "[parameters('paramOsDiskType')]"
