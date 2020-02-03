@@ -402,7 +402,7 @@
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('eIPKubeMaster'))]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('eIPKubeNode'))]"
               },
               "subnet": {
                 "id": "[variables('subnetRef')]"
