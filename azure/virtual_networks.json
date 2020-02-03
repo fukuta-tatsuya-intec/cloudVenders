@@ -425,6 +425,7 @@
         },
         "storageProfile": {
           "osDisk": {
+            "name": "[concat(variables('vmInstanceVpnServer'), 'Md')]",
             "createOption": "FromImage",
             "diskSizeGB": 30,
             "managedDisk": {
@@ -466,6 +467,7 @@
         },
         "storageProfile": {
           "osDisk": {
+            "name": "[concat(variables('vmInstanceKubeMaster'), 'Md')]",
             "createOption": "FromImage",
             "diskSizeGB": "[parameters('paramOsDiskSizeGBKubeMaster')]",
             "managedDisk": {
@@ -507,6 +509,7 @@
         },
         "storageProfile": {
           "osDisk": {
+            "name": "[concat(variables('vmInstanceKubeNode'), 'Md')]",
             "createOption": "FromImage",
             "diskSizeGB": "[parameters('paramOsDiskSizeGBKubeNode')]",
             "managedDisk": {
