@@ -1,0 +1,357 @@
+Parameters:
+  ParamAvailabilityZone:
+    Type: String
+    AllowedValues: 
+      - ap-northeast-1a
+      - ap-northeast-1c
+      - ap-northeast-1d
+    Description: AvailabilityZone
+Resources:
+  # VPC
+  RdboxhqVPC:
+    Type: 'AWS::EC2::VPC'
+    DeletionPolicy: "Delete"
+    Properties:
+      CidrBlock: 172.16.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      InstanceTenancy: default
+      Tags:
+        - Key: Name
+          Value: RdboxhqVPC
+  # InternetGateway
+  RdboxhqInternetGateway:
+    Type: 'AWS::EC2::InternetGateway'
+    DeletionPolicy: "Delete"
+    Properties:
+      Tags:
+        - Key: Name
+          Value: RdboxhqInternetGateway
+  RdboxhqInternetGatewayAttachment:
+    Type: 'AWS::EC2::VPCGatewayAttachment'
+    Properties:
+      InternetGatewayId: !Ref RdboxhqInternetGateway
+      VpcId: !Ref RdboxhqVPC
+  # DHCPOptions
+  RdboxhqDHCPOptions:
+    Type: 'AWS::EC2::DHCPOptions'
+    DeletionPolicy: "Delete"
+    Properties:
+      DomainName: ap-northeast-1.compute.internal
+      DomainNameServers:
+       - AmazonProvidedDNS
+      Tags:
+        - Key: Name
+          Value: RdboxhqDHCPOptions
+  RdboxhqDHCPOptionsAssociation:
+    Type: 'AWS::EC2::VPCDHCPOptionsAssociation'
+    Properties: 
+      DhcpOptionsId: !Ref RdboxhqDHCPOptions
+      VpcId: !Ref RdboxhqVPC
+  # RouteTable
+  RdboxhqRouteTable:
+    Type: 'AWS::EC2::RouteTable'
+    DeletionPolicy: "Delete"
+    Properties:
+      VpcId: !Ref RdboxhqVPC
+      Tags:
+        - Key: Name
+          Value: RdboxhqRouteTable
+  # Route
+  RdboxhqRoute:
+    Type: 'AWS::EC2::Route'
+    DeletionPolicy: "Delete"
+    Properties:
+      RouteTableId: !Ref RdboxhqRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref RdboxhqInternetGateway
+  # Subnet
+  RdboxhqSubnet:
+    Type: 'AWS::EC2::Subnet'
+    DeletionPolicy: "Delete"
+    Properties:
+      AvailabilityZone:
+        Ref: ParamAvailabilityZone
+      CidrBlock: 172.16.0.0/16
+      VpcId: !Ref RdboxhqVPC
+      Tags:
+        - Key: Name
+          Value: RdboxhqSubnet
+  RdboxhqSubnetRouteTableAssociation:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties: 
+      RouteTableId: !Ref RdboxhqRouteTable
+      SubnetId: !Ref RdboxhqSubnet
+  # SecurityGroup
+  RdboxhqSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    DeletionPolicy: "Delete"
+    Properties:
+      GroupName: RdboxhqSecurityGroup
+      GroupDescription: RdboxhqSecurityGroup
+      VpcId: !Ref RdboxhqVPC
+      Tags:
+        - Key: Name
+          Value: RdboxhqSecurityGroup
+  # SecurityGroupIngress
+  RdboxhqSecurityGroupIngress00001:
+    Type: 'AWS::EC2::SecurityGroupIngress'
+    DeletionPolicy: "Delete"
+    Properties:
+      GroupId: !Ref RdboxhqSecurityGroup
+      IpProtocol: tcp
+      FromPort: 22
+      ToPort: 22
+      CidrIp: 10.0.0.1/24
+      Tags:
+        - Key: Name
+          Value: RdboxhqSecurityGroupIngress00001
+  # SecurityGroupIngress
+  RdboxhqSecurityGroupIngress00002:
+    Type: 'AWS::EC2::SecurityGroupIngress'
+    DeletionPolicy: "Delete"
+    Properties:
+      GroupId: !Ref RdboxhqSecurityGroup
+      IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
+      CidrIp: 10.0.0.1/24
+      Tags:
+        - Key: Name
+          Value: RdboxhqSecurityGroupIngress00002
+  # SecurityGroupIngress
+  RdboxhqSecurityGroupIngress00003:
+    Type: 'AWS::EC2::SecurityGroupIngress'
+    DeletionPolicy: "Delete"
+    Properties:
+      GroupId: !Ref RdboxhqSecurityGroup
+      IpProtocol: tcp
+      FromPort: 30443
+      ToPort: 30443
+      CidrIp: 10.0.0.1/24
+      Tags:
+        - Key: Name
+          Value: RdboxhqSecurityGroupIngress00003
+  # SecurityGroupIngress
+  RdboxhqSecurityGroupIngress00004:
+    Type: 'AWS::EC2::SecurityGroupIngress'
+    DeletionPolicy: "Delete"
+    Properties:
+      GroupId: !Ref RdboxhqSecurityGroup
+      IpProtocol: tcp
+      FromPort: 22
+      ToPort: 22
+      CidrIp: 192.168.1.1/24
+      Tags:
+        - Key: Name
+          Value: RdboxhqSecurityGroupIngress00004
+  # SecurityGroupIngress
+  RdboxhqSecurityGroupIngress00005:
+    Type: 'AWS::EC2::SecurityGroupIngress'
+    DeletionPolicy: "Delete"
+    Properties:
+      GroupId: !Ref RdboxhqSecurityGroup
+      IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
+      CidrIp: 192.168.1.1/24
+      Tags:
+        - Key: Name
+          Value: RdboxhqSecurityGroupIngress00005
+  # SecurityGroupIngress
+  RdboxhqSecurityGroupIngress00006:
+    Type: 'AWS::EC2::SecurityGroupIngress'
+    DeletionPolicy: "Delete"
+    Properties:
+      GroupId: !Ref RdboxhqSecurityGroup
+      IpProtocol: tcp
+      FromPort: 30443
+      ToPort: 30443
+      CidrIp: 192.168.1.1/24
+      Tags:
+        - Key: Name
+          Value: RdboxhqSecurityGroupIngress00006
+  # SecurityGroupIngress
+  RdboxhqSecurityGroupIngress00007:
+    Type: 'AWS::EC2::SecurityGroupIngress'
+    DeletionPolicy: "Delete"
+    Properties:
+      GroupId: !Ref RdboxhqSecurityGroup
+      IpProtocol: tcp
+      FromPort: 22
+      ToPort: 22
+      CidrIp: 27.110.28.52/32
+      Tags:
+        - Key: Name
+          Value: RdboxhqSecurityGroupIngress00007
+  # SecurityGroupIngress
+  RdboxhqSecurityGroupIngress00008:
+    Type: 'AWS::EC2::SecurityGroupIngress'
+    DeletionPolicy: "Delete"
+    Properties:
+      GroupId: !Ref RdboxhqSecurityGroup
+      IpProtocol: tcp
+      FromPort: 443
+      ToPort: 443
+      CidrIp: 27.110.28.52/32
+      Tags:
+        - Key: Name
+          Value: RdboxhqSecurityGroupIngress00008
+  # SecurityGroupIngress
+  RdboxhqSecurityGroupIngress00009:
+    Type: 'AWS::EC2::SecurityGroupIngress'
+    DeletionPolicy: "Delete"
+    Properties:
+      GroupId: !Ref RdboxhqSecurityGroup
+      IpProtocol: tcp
+      FromPort: 30443
+      ToPort: 30443
+      CidrIp: 27.110.28.52/32
+      Tags:
+        - Key: Name
+          Value: RdboxhqSecurityGroupIngress00009
+  # SecurityGroupIngress
+  RdboxhqSecurityGroupIngress00010:
+    Type: 'AWS::EC2::SecurityGroupIngress'
+    DeletionPolicy: "Delete"
+    Properties:
+      GroupId: !Ref RdboxhqSecurityGroup
+      IpProtocol: tcp
+      FromPort: 0
+      ToPort: 65535
+      CidrIp: 10.0.0.0/8
+      Tags:
+        - Key: Name
+          Value: RdboxhqSecurityGroupIngress00010
+  # SecurityGroupIngress
+  RdboxhqSecurityGroupIngress00011:
+    Type: 'AWS::EC2::SecurityGroupIngress'
+    DeletionPolicy: "Delete"
+    Properties:
+      GroupId: !Ref RdboxhqSecurityGroup
+      IpProtocol: udp
+      FromPort: 0
+      ToPort: 65535
+      CidrIp: 10.0.0.0/8
+      Tags:
+        - Key: Name
+          Value: RdboxhqSecurityGroupIngress00011
+  # SecurityGroupIngress
+  RdboxhqSecurityGroupIngress00012:
+    Type: 'AWS::EC2::SecurityGroupIngress'
+    DeletionPolicy: "Delete"
+    Properties:
+      GroupId: !Ref RdboxhqSecurityGroup
+      IpProtocol: tcp
+      FromPort: 0
+      ToPort: 65535
+      CidrIp: 192.168.179.0/24
+      Tags:
+        - Key: Name
+          Value: RdboxhqSecurityGroupIngress00012
+  # SecurityGroupIngress
+  RdboxhqSecurityGroupIngress00013:
+    Type: 'AWS::EC2::SecurityGroupIngress'
+    DeletionPolicy: "Delete"
+    Properties:
+      GroupId: !Ref RdboxhqSecurityGroup
+      IpProtocol: udp
+      FromPort: 0
+      ToPort: 65535
+      CidrIp: 192.168.179.0/24
+      Tags:
+        - Key: Name
+          Value: RdboxhqSecurityGroupIngress00013
+  # SecurityGroupIngress
+  RdboxhqSecurityGroupIngress00014:
+    Type: 'AWS::EC2::SecurityGroupIngress'
+    DeletionPolicy: "Delete"
+    Properties:
+      GroupId: !Ref RdboxhqSecurityGroup
+      IpProtocol: tcp
+      FromPort: 0
+      ToPort: 65535
+      CidrIp: 172.16.0.0/16
+      Tags:
+        - Key: Name
+          Value: RdboxhqSecurityGroupIngress00014
+  # SecurityGroupIngress
+  RdboxhqSecurityGroupIngress00015:
+    Type: 'AWS::EC2::SecurityGroupIngress'
+    DeletionPolicy: "Delete"
+    Properties:
+      GroupId: !Ref RdboxhqSecurityGroup
+      IpProtocol: udp
+      FromPort: 0
+      ToPort: 65535
+      CidrIp: 172.16.0.0/16
+      Tags:
+        - Key: Name
+          Value: RdboxhqSecurityGroupIngress00015
+  # SecurityGroupIngress
+  RdboxhqSecurityGroupIngress00016:
+    Type: 'AWS::EC2::SecurityGroupIngress'
+    DeletionPolicy: "Delete"
+    Properties:
+      GroupId: !Ref RdboxhqSecurityGroup
+      IpProtocol: icmp
+      FromPort: -1
+      ToPort: -1
+      CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: RdboxhqSecurityGroupIngress00016
+  # EIP
+  RdboxhqEIPVpnServer:
+    Type: 'AWS::EC2::EIP'
+    DeletionPolicy: "Delete"
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: RdboxhqEIPVpnServer
+  # EIP
+  RdboxhqEIPKubeMaster:
+    Type: 'AWS::EC2::EIP'
+    DeletionPolicy: "Delete"
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: RdboxhqEIPKubeMaster
+Outputs:
+  # Export
+  RdboxhqVPCId:
+    Value: !Ref RdboxhqVPC
+    Export:
+      Name: ExpRdboxhqVPC
+  # Export
+  RdboxhqSubnetId:
+    Value: !Ref RdboxhqSubnet
+    Export:
+      Name: ExpRdboxhqSubnet
+  # Export
+  RdboxhqSecurityGroupId:
+    Value: !Ref RdboxhqSecurityGroup
+    Export:
+      Name: ExpRdboxhqSecurityGroup
+  # Export
+  RdboxhqEIPVpnServerId:
+    Value: !Ref RdboxhqEIPVpnServer
+    Export:
+      Name: ExpRdboxhqEIPVpnServer
+  # Export
+  RdboxhqEIPKubeMasterId:
+    Value: !Ref RdboxhqEIPKubeMaster
+    Export:
+      Name: ExpRdboxhqEIPKubeMaster
+  # Export
+  RdboxhqEIPVpnServerAllocationIdId:
+    Value: !GetAtt RdboxhqEIPVpnServer.AllocationId
+    Export:
+      Name: ExpRdboxhqEIPVpnServerAllocationId
+  # Export
+  RdboxhqEIPKubeMasterAllocationIdId:
+    Value: !GetAtt RdboxhqEIPKubeMaster.AllocationId
+    Export:
+      Name: ExpRdboxhqEIPKubeMasterAllocationId

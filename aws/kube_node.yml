@@ -1,0 +1,64 @@
+Parameters:
+  ParamInstanceType:
+    Type: String
+    Default: t2.medium
+    AllowedValues: 
+      - t2.micro
+      - t2.small
+      - t2.medium
+      - t2.large
+    Description: AWS::EC2::Instance
+  ParamKubeNodeName:
+    Type: String
+    Default: RdboxhqEc2InstanceKubeNode01
+    AllowedValues: 
+      - RdboxhqEc2InstanceKubeNode01
+      - RdboxhqEc2InstanceKubeNode02
+      - RdboxhqEc2InstanceKubeNode03
+      - RdboxhqEc2InstanceKubeNode04
+      - RdboxhqEc2InstanceKubeNode05
+      - RdboxhqEc2InstanceKubeNode06
+      - RdboxhqEc2InstanceKubeNode07
+      - RdboxhqEc2InstanceKubeNode08
+      - RdboxhqEc2InstanceKubeNode09
+      - RdboxhqEc2InstanceKubeNode10
+    Description: Kubernetes node name
+Resources:
+  RdboxhqEc2InstanceKubeNode:
+    Type: 'AWS::EC2::Instance'
+    DeletionPolicy: "Delete"
+    Properties:
+      ImageId: ami-09c81ecf1c2b2ef70
+      InstanceType:
+        Ref: ParamInstanceType
+      BlockDeviceMappings: 
+        - DeviceName: "/dev/sda1"
+          Ebs: 
+            VolumeSize: "80"
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: "true"
+          DeviceIndex: "0"
+          SubnetId: !ImportValue ExpRdboxhqSubnet
+          GroupSet:
+            - !ImportValue ExpRdboxhqSecurityGroup
+      KeyName: rdboxuser-fkt
+      UserData: !Base64 
+        'Fn::Join':
+          - ''
+          - - |
+              #!/bin/bash -xe
+            - |
+              export DEBIAN_FRONTEND=noninteractive
+              apt-mark hold grub-pc
+              apt -y update
+            - |
+              apt -y install ansible bridge-utils traceroute dnsutils
+              apt -y install python-pip
+              pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
+              chmod +x /usr/local/init/ubuntu/cfn-hup
+              ln -s /usr/local/init/ubuntu/cfn-hup /etc/init.d/cfn-hup
+            - |+
+      Tags:
+        - Key: Name
+          Value:
+            Ref: ParamKubeNodeName
