@@ -2,6 +2,20 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "paramYourGlobalIPAddress": {
+      "type": "string",
+      "minLength": 7,
+      "maxLength": 15,
+      "metadata": {
+        "description": "Your IP Address allowed to connect to Azure. For example, you can check it on the following (https://www.myglobalip.com/)"
+      }
+    },
+    "paramAdminPubKey": {
+      "type": "securestring",
+      "metadata": {
+        "description": "SSH Key for the Virtual Machine."
+      }
+    },
     "paramResourcePrefix": {
       "type": "string",
       "defaultValue": "Rdboxhq",
@@ -18,25 +32,11 @@
         "description": "A address block reserved for this virtual network in CIDR notation."
       }
     },
-    "paramYourGlobalIPAddress": {
-      "type": "string",
-      "minLength": 7,
-      "maxLength": 15,
-      "metadata": {
-        "description": "Your IP Address allowed to connect to Azure. For example, you can check it on the following (https://www.myglobalip.com/)"
-      }
-    },
     "paramAdminUsername": {
       "type": "string",
       "defaultValue": "ubuntu",
       "metadata": {
         "description": "Username for the Virtual Machine."
-      }
-    },
-    "paramAdminPubKey": {
-      "type": "securestring",
-      "metadata": {
-        "description": "SSH Key for the Virtual Machine."
       }
     },
     "paramVmSizeVpnServer": {
