@@ -461,6 +461,7 @@
           ]
         },
         "osProfile": {
+          "computerName": "vpn-server",
           "adminUsername": "[parameters('paramAdminUsername')]",
           "linuxConfiguration": "[variables('linuxConfiguration')]"
         }
@@ -501,6 +502,7 @@
           ]
         },
         "osProfile": {
+          "computerName": "k8s-master",
           "adminUsername": "[parameters('paramAdminUsername')]",
           "linuxConfiguration": "[variables('linuxConfiguration')]"
         }
@@ -541,6 +543,7 @@
           ]
         },
         "osProfile": {
+          "computerName": "k8s-node-00",
           "adminUsername": "[parameters('paramAdminUsername')]",
           "linuxConfiguration": "[variables('linuxConfiguration')]"
         }
