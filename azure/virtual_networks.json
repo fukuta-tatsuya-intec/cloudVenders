@@ -9,41 +9,6 @@
         "description": "Prefix for each resource name in the cluster"
       }
     },
-    "paramLocation": {
-      "type": "string",
-      "defaultValue": "japaneast",
-      "allowedValues": [
-        "eastasia",
-        "southeastasia",
-        "centralus",
-        "eastus",
-        "eastus2",
-        "westus",
-        "northcentralus",
-        "southcentralus",
-        "northeurope",
-        "westeurope",
-        "japanwest",
-        "japaneast",
-        "brazilsouth",
-        "australiaeast",
-        "australiasoutheast",
-        "southindia",
-        "centralindia",
-        "westindia",
-        "canadacentral",
-        "canadaeast",
-        "uksouth",
-        "ukwest",
-        "westcentralus",
-        "westus2",
-        "koreacentral",
-        "koreasouth"
-      ],
-      "metadata": {
-        "description": "Location for all resources."
-      }
-    },
     "paramVPCCidrBlock": {
       "type": "string",
       "defaultValue": "172.16.0.0/12",
@@ -133,6 +98,7 @@
     "subnet": "[concat(parameters('paramResourcePrefix'), 'Subnet')]",
     "eIPVpnServer": "[concat(parameters('paramResourcePrefix'), 'EIPVpnServer')]",
     "eIPKubeMaster": "[concat(parameters('paramResourcePrefix'), 'EIPKubeMaster')]",
+    "eIPKubeNode": "[concat(parameters('paramResourcePrefix'), 'EIPKubeNode')]",
     "nICVpnServer": "[concat(parameters('paramResourcePrefix'), 'NICVpnServer')]",
     "nICKubeMaster": "[concat(parameters('paramResourcePrefix'), 'NICKubeMaster')]",
     "nICKubeNode": "[concat(parameters('paramResourcePrefix'), 'NICKubeNode')]",
@@ -160,7 +126,7 @@
       "name": "[variables('securityGroup')]",
       "type": "Microsoft.Network/networkSecurityGroups",
       "apiVersion": "2019-11-01",
-      "location": "[parameters('paramLocation')]",
+      "location": "[resourceGroup().location]",
       "tags": {
       },
       "properties": {
@@ -298,7 +264,7 @@
       "name": "[variables('virtualNetworks')]",
       "type": "Microsoft.Network/virtualNetworks",
       "apiVersion": "2019-11-01",
-      "location": "[parameters('paramLocation')]",
+      "location": "[resourceGroup().location]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/networkSecurityGroups', variables('securityGroup'))]"
       ],
@@ -326,7 +292,10 @@
       "name": "[variables('eIPVpnServer')]",
       "type": "Microsoft.Network/publicIPAddresses",
       "apiVersion": "2019-11-01",
-      "location": "[parameters('paramLocation')]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "Standard"
+      },
       "properties": {
         "publicIPAllocationMethod": "Static"
       }
@@ -335,16 +304,31 @@
       "name": "[variables('eIPKubeMaster')]",
       "type": "Microsoft.Network/publicIPAddresses",
       "apiVersion": "2019-11-01",
-      "location": "[parameters('paramLocation')]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "Standard"
+      },
       "properties": {
         "publicIPAllocationMethod": "Static"
+      }
+    },
+    {
+      "name": "[variables('eIPKubeNode')]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2019-11-01",
+      "location": "[parameters('paramLocation')]",
+      "sku": {
+        "name": "Standard"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic"
       }
     },
     {
       "name": "[variables('nICVpnServer')]",
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2019-11-01",
-      "location": "[parameters('paramLocation')]",
+      "location": "[resourceGroup().location]",
       "properties": {
         "networkSecurityGroup": {
           "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('securityGroup'))]"
@@ -374,7 +358,7 @@
       "name": "[variables('nICKubeMaster')]",
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2019-11-01",
-      "location": "[parameters('paramLocation')]",
+      "location": "[resourceGroup().location]",
       "properties": {
         "networkSecurityGroup": {
           "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('securityGroup'))]"
@@ -404,7 +388,7 @@
       "name": "[variables('nICKubeNode')]",
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2019-11-01",
-      "location": "[parameters('paramLocation')]",
+      "location": "[resourceGroup().location]",
       "properties": {
         "networkSecurityGroup": {
           "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('securityGroup'))]"
@@ -422,6 +406,7 @@
         ]
       },
       "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', variables('eIPKubeNode'))]",
         "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworks'))]",
         "[resourceId('Microsoft.Network/networkSecurityGroups', variables('securityGroup'))]"
       ]
@@ -430,7 +415,7 @@
       "name": "[variables('vmInstanceVpnServer')]",
       "type": "Microsoft.Compute/virtualMachines",
       "apiVersion": "2019-07-01",
-      "location": "[parameters('paramLocation')]",
+      "location": "[resourceGroup().location]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/networkInterfaces', variables('nICVpnServer'))]"
       ],
@@ -471,7 +456,7 @@
       "name": "[variables('vmInstanceKubeMaster')]",
       "type": "Microsoft.Compute/virtualMachines",
       "apiVersion": "2019-07-01",
-      "location": "[parameters('paramLocation')]",
+      "location": "[resourceGroup().location]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/networkInterfaces', variables('nICKubeMaster'))]"
       ],
@@ -512,7 +497,7 @@
       "name": "[variables('vmInstanceKubeNode')]",
       "type": "Microsoft.Compute/virtualMachines",
       "apiVersion": "2019-07-01",
-      "location": "[parameters('paramLocation')]",
+      "location": "[resourceGroup().location]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/networkInterfaces', variables('nICKubeNode'))]"
       ],
