@@ -105,6 +105,9 @@
     "vmInstanceVpnServer": "[concat(parameters('paramResourcePrefix'), 'VmInstanceVpnServer')]",
     "vmInstanceKubeMaster": "[concat(parameters('paramResourcePrefix'), 'VmInstanceKubeMaster')]",
     "vmInstanceKubeNode": "[concat(parameters('paramResourcePrefix'), 'VmInstanceKubeNode')]",
+    "managedDiskVpnServer": "[concat(parameters('paramResourcePrefix'), 'ManagedDiskVpnServer')]",
+    "managedDiskKubeMaster": "[concat(parameters('paramResourcePrefix'), 'ManagedDiskKubeMaster')]",
+    "managedDiskKubeNode": "[concat(parameters('paramResourcePrefix'), 'ManagedDiskKubeNode')]",
     "yourGlobalCidrBlock": "[concat(parameters('paramYourGlobalIPAddress'), '/32')]",
     "vNetID": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworks'))]",
     "subnetRef": "[concat(variables('vNetID'), '/subnets/', variables('subnet'))]",
@@ -398,6 +401,9 @@
             "name": "RdboxhqKubeNodeIpconfig",
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('eIPKubeMaster'))]"
+              },
               "subnet": {
                 "id": "[variables('subnetRef')]"
               }
@@ -425,7 +431,7 @@
         },
         "storageProfile": {
           "osDisk": {
-            "name": "[concat(variables('vmInstanceVpnServer'), 'Md')]",
+            "name": "[variables('managedDiskVpnServer')]",
             "createOption": "FromImage",
             "diskSizeGB": 30,
             "managedDisk": {
@@ -467,7 +473,7 @@
         },
         "storageProfile": {
           "osDisk": {
-            "name": "[concat(variables('vmInstanceKubeMaster'), 'Md')]",
+            "name": "[variables('managedDiskKubeMaster')]",
             "createOption": "FromImage",
             "diskSizeGB": "[parameters('paramOsDiskSizeGBKubeMaster')]",
             "managedDisk": {
@@ -509,7 +515,7 @@
         },
         "storageProfile": {
           "osDisk": {
-            "name": "[concat(variables('vmInstanceKubeNode'), 'Md')]",
+            "name": "[variables('managedDiskKubeNode')]",
             "createOption": "FromImage",
             "diskSizeGB": "[parameters('paramOsDiskSizeGBKubeNode')]",
             "managedDisk": {
