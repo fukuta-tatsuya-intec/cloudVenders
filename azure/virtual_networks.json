@@ -316,7 +316,7 @@
       "name": "[variables('eIPKubeNode')]",
       "type": "Microsoft.Network/publicIPAddresses",
       "apiVersion": "2019-11-01",
-      "location": "[parameters('paramLocation')]",
+      "location": "[resourceGroup().location]",
       "sku": {
         "name": "Standard"
       },
