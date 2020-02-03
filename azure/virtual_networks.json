@@ -174,6 +174,7 @@
               "sourceAddressPrefixes": [
                 "[variables('yourGlobalCidrBlock')]"
               ],
+              "destinationAddressPrefix": "*",
               "access": "Allow",
               "direction": "Inbound",
               "priority": 100
@@ -189,6 +190,7 @@
               "sourceAddressPrefixes": [
                 "[variables('yourGlobalCidrBlock')]"
               ],
+              "destinationAddressPrefix": "*",
               "access": "Allow",
               "direction": "Inbound",
               "priority": 100
