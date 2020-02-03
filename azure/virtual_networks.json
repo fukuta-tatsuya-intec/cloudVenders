@@ -204,6 +204,7 @@
               "sourceAddressPrefixes": [
                 "[variables('yourGlobalCidrBlock')]"
               ],
+              "destinationAddressPrefix": "*",
               "access": "Allow",
               "direction": "Inbound",
               "priority": 100
@@ -219,6 +220,7 @@
               "sourceAddressPrefixes": [
                 "192.168.179.0/24"
               ],
+              "destinationAddressPrefix": "*",
               "access": "Allow",
               "direction": "Inbound",
               "priority": 100
@@ -234,6 +236,7 @@
               "sourceAddressPrefixes": [
                 "192.168.179.0/24"
               ],
+              "destinationAddressPrefix": "*",
               "access": "Allow",
               "direction": "Inbound",
               "priority": 100
@@ -249,6 +252,7 @@
               "sourceAddressPrefixes": [
                 "[parameters('paramVPCCidrBlock')]"
               ],
+              "destinationAddressPrefix": "*",
               "access": "Allow",
               "direction": "Inbound",
               "priority": 100
@@ -264,6 +268,7 @@
               "sourceAddressPrefixes": [
                 "[parameters('paramVPCCidrBlock')]"
               ],
+              "destinationAddressPrefix": "*",
               "access": "Allow",
               "direction": "Inbound",
               "priority": 100
@@ -277,6 +282,7 @@
               "sourcePortRange": "*",
               "destinationPortRange": "*",
               "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
               "access": "Allow",
               "direction": "Inbound",
               "priority": 100
