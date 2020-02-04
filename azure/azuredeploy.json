@@ -16,6 +16,23 @@
         "description": "SSH Key for the Virtual Machine."
       }
     },
+    "paramKubeNodeInstanceCount": {
+      "type": "int",
+      "allowedValues": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "metadata": {
+        "description": "Number of Kubernetes Node servers"
+      }
+    },
     "paramResourcePrefix": {
       "type": "string",
       "defaultValue": "Rdboxhq",
@@ -98,16 +115,14 @@
     "subnet": "[concat(parameters('paramResourcePrefix'), 'Subnet')]",
     "eIPVpnServer": "[concat(parameters('paramResourcePrefix'), 'EIPVpnServer')]",
     "eIPKubeMaster": "[concat(parameters('paramResourcePrefix'), 'EIPKubeMaster')]",
-    "eIPKubeNode": "[concat(parameters('paramResourcePrefix'), 'EIPKubeNode')]",
     "nICVpnServer": "[concat(parameters('paramResourcePrefix'), 'NICVpnServer')]",
     "nICKubeMaster": "[concat(parameters('paramResourcePrefix'), 'NICKubeMaster')]",
-    "nICKubeNode": "[concat(parameters('paramResourcePrefix'), 'NICKubeNode')]",
     "vmInstanceVpnServer": "[concat(parameters('paramResourcePrefix'), 'VmInstanceVpnServer')]",
     "vmInstanceKubeMaster": "[concat(parameters('paramResourcePrefix'), 'VmInstanceKubeMaster')]",
-    "vmInstanceKubeNode": "[concat(parameters('paramResourcePrefix'), 'VmInstanceKubeNode')]",
     "managedDiskVpnServer": "[concat(parameters('paramResourcePrefix'), 'ManagedDiskVpnServer')]",
     "managedDiskKubeMaster": "[concat(parameters('paramResourcePrefix'), 'ManagedDiskKubeMaster')]",
-    "managedDiskKubeNode": "[concat(parameters('paramResourcePrefix'), 'ManagedDiskKubeNode')]",
+    "templateKubeNode": "[concat(parameters('paramResourcePrefix'), 'TemplateKubeNode')]",
+    "templateKubeNodeUrl": "[uri(deployment().properties.templateLink.uri, 'templates/kubenode.json')]",
     "yourGlobalCidrBlock": "[concat(parameters('paramYourGlobalIPAddress'), '/32')]",
     "vNetID": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworks'))]",
     "subnetRef": "[concat(variables('vNetID'), '/subnets/', variables('subnet'))]",
@@ -316,18 +331,6 @@
       }
     },
     {
-      "name": "[variables('eIPKubeNode')]",
-      "type": "Microsoft.Network/publicIPAddresses",
-      "apiVersion": "2019-11-01",
-      "location": "[resourceGroup().location]",
-      "sku": {
-        "name": "Basic"
-      },
-      "properties": {
-        "publicIPAllocationMethod": "Dynamic"
-      }
-    },
-    {
       "name": "[variables('nICVpnServer')]",
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2019-11-01",
@@ -383,36 +386,6 @@
       },
       "dependsOn": [
         "[resourceId('Microsoft.Network/publicIPAddresses', variables('eIPKubeMaster'))]",
-        "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworks'))]",
-        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('securityGroup'))]"
-      ]
-    },
-    {
-      "name": "[variables('nICKubeNode')]",
-      "type": "Microsoft.Network/networkInterfaces",
-      "apiVersion": "2019-11-01",
-      "location": "[resourceGroup().location]",
-      "properties": {
-        "networkSecurityGroup": {
-          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('securityGroup'))]"
-        },
-        "ipConfigurations": [
-          {
-            "name": "RdboxhqKubeNodeIpconfig",
-            "properties": {
-              "privateIPAllocationMethod": "Dynamic",
-              "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('eIPKubeNode'))]"
-              },
-              "subnet": {
-                "id": "[variables('subnetRef')]"
-              }
-            }
-          }
-        ]
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses', variables('eIPKubeNode'))]",
         "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworks'))]",
         "[resourceId('Microsoft.Network/networkSecurityGroups', variables('securityGroup'))]"
       ]
@@ -502,44 +475,40 @@
       }
     },
     {
-      "name": "[variables('vmInstanceKubeNode')]",
-      "type": "Microsoft.Compute/virtualMachines",
-      "apiVersion": "2019-07-01",
-      "location": "[resourceGroup().location]",
+      "type": "Microsoft.Resources/deployments",
+      "name": "[variables('templateKubeNode')]",
+      "apiVersion": "2017-05-10",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces', variables('nICKubeNode'))]"
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworks'))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('securityGroup'))]"
       ],
       "properties": {
-        "hardwareProfile": {
-          "vmSize": "[parameters('paramVmSizeKubeNode')]"
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('templateKubeNodeUrl')]"
         },
-        "storageProfile": {
-          "osDisk": {
-            "name": "[variables('managedDiskKubeNode')]",
-            "createOption": "FromImage",
-            "diskSizeGB": "[parameters('paramOsDiskSizeGBKubeNode')]",
-            "managedDisk": {
-              "storageAccountType": "[parameters('paramOsDiskType')]"
-            }
+        "parameters": {
+          "paramAdminPubKey": {
+            "value": "[parameters('paramAdminPubKey')]"
           },
-          "imageReference": {
-            "publisher": "Canonical",
-            "offer": "UbuntuServer",
-            "sku": "[variables('ubuntuOSVersion')]",
-            "version": "latest"
+          "paramKubeNodeInstanceCount": {
+            "value": "[parameters('paramKubeNodeInstanceCount')]"
+          },
+          "paramResourcePrefix": {
+            "value": "[parameters('paramResourcePrefix')]"
+          },
+          "paramAdminUsername": {
+            "value": "[parameters('paramAdminUsername')]"
+          },
+          "paramVmSizeKubeNode": {
+            "value": "[parameters('paramVmSizeKubeNode')]"
+          },
+          "paramOsDiskType": {
+            "value": "[parameters('paramOsDiskType')]"
+          },
+          "paramOsDiskSizeGBKubeNode": {
+            "value": "[parameters('paramOsDiskSizeGBKubeNode')]"
           }
-        },
-        "networkProfile": {
-          "networkInterfaces": [
-            {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nICKubeNode'))]"
-            }
-          ]
-        },
-        "osProfile": {
-          "computerName": "k8s-node-00",
-          "adminUsername": "[parameters('paramAdminUsername')]",
-          "linuxConfiguration": "[variables('linuxConfiguration')]"
         }
       }
     }
